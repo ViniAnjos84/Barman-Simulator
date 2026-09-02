@@ -31,5 +31,7 @@ DRINK_POSITION = (550, 30)
 ML_BAR_POSITION = (820, 330)
 ML_BAR_SIZE = (20, 200)
 
-# Quantidade adicionada ao copo a cada clique em um ingrediente.
-INGREDIENT_ML_PER_CLICK = 50
+# Velocidade original de preenchimento: 40 ml/s após 600 ms.
+FILL_DELAY_MS = 600
+FILL_SPEED_ML_PER_SECOND = 40
+GRADIENT_HEIGHT = 15
