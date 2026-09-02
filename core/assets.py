@@ -1,8 +1,6 @@
 import os
 import pygame
 
-from core.config import GLASS_SIZE
-
 
 class AssetManager:
     """Carrega e mantém assets em cache para evitar leituras repetidas do disco."""
