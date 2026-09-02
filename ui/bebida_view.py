@@ -10,9 +10,12 @@ class BebidaView:
         screen.blit(image, position)
 
     def draw_fluxo(self, screen, ingrediente, position, size, tempo_inicio):
-        """Desenha o fluxo visual enquanto o ingrediente está sendo adicionado."""
+        """Desenha o fluxo visual saindo exatamente da tampa da garrafa."""
         image = assets.image(ingrediente.icone, size, 90)
-        x = position[0] + image.get_width() // 2
+
+        # Com a garrafa rotacionada 90°, a tampa fica na extremidade
+        # esquerda da imagem. O fluxo deve começar exatamente nesse X.
+        x = position[0]
         y = position[1] + image.get_height() // 2
 
         tempo = pygame.time.get_ticks() - tempo_inicio
@@ -63,7 +66,6 @@ class BebidaView:
                 (0, int(y_liquido), largura, int(altura)),
             )
 
-            # O degradê fica na interface entre a bebida atual e a anterior.
             if indice > 0 and GRADIENT_HEIGHT > 0:
                 cor_anterior = bebida.ingredientes[indice - 1].ingrediente.cor
                 cor_atual = item.ingrediente.cor
