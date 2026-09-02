@@ -7,6 +7,7 @@ from core.config import (
     DRINK_POSITION,
     FPS,
     GLASS_POSITION,
+    INGREDIENT_ML_PER_CLICK,
     ML_BAR_POSITION,
     ML_BAR_SIZE,
     SCREEN_HEIGHT,
@@ -66,14 +67,28 @@ class Game:
         if ingrediente is None:
             return
 
-        self.item_selecionado = ingrediente
-        self.bebida.adicionar_ingrediente(ingrediente)
-        print(f"Ingrediente selecionado: {ingrediente.nome}")
+        adicionado = self.bebida.adicionar_ingrediente(
+            ingrediente,
+            INGREDIENT_ML_PER_CLICK,
+        )
+
+        if adicionado:
+            self.item_selecionado = ingrediente
+            print(
+                f"Ingrediente adicionado: {ingrediente.nome} "
+                f"(+{INGREDIENT_ML_PER_CLICK} ml)"
+            )
 
     def _render(self):
         self.screen.blit(self.background, (0, 0))
         self.hud.draw(self.screen)
         self.slot_grid.draw(self.screen)
+
+        self.bebida_view.draw_liquido(
+            self.screen,
+            self.bebida,
+            GLASS_POSITION,
+        )
 
         if self.item_selecionado:
             self.bebida_view.draw(
