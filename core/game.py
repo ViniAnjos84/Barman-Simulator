@@ -4,7 +4,6 @@ from core.assets import assets
 from core.config import (
     BACKGROUND_PATH,
     DRINK_ICON_SIZE,
-    DRINK_POSITION,
     FILL_DELAY_MS,
     FILL_SPEED_ML_PER_SECOND,
     FPS,
@@ -122,10 +121,17 @@ class Game:
         )
 
         if self.item_selecionado:
+            # A imagem da garrafa está rotacionada 90°. A tampa fica na
+            # extremidade esquerda da imagem; por isso, o X da imagem é
+            # exatamente o centro horizontal do copo.
+            x_garrafa = GLASS_POSITION[0] + self.copo.tamanho[0] // 2
+            y_garrafa = 30
+            posicao_garrafa = (x_garrafa, y_garrafa)
+
             self.bebida_view.draw(
                 self.screen,
                 self.item_selecionado,
-                DRINK_POSITION,
+                posicao_garrafa,
                 DRINK_ICON_SIZE,
                 rotation=90,
             )
@@ -134,7 +140,7 @@ class Game:
                 self.bebida_view.draw_fluxo(
                     self.screen,
                     self.item_selecionado,
-                    DRINK_POSITION,
+                    posicao_garrafa,
                     DRINK_ICON_SIZE,
                     self.tempo_inicio,
                 )
