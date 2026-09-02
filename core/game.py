@@ -113,6 +113,7 @@ class Game:
         self.hud.draw(self.screen)
         self.slot_grid.draw(self.screen)
 
+        # CAMADA 1: líquido, usando a máscara do copo.
         self.bebida_view.draw_liquido(
             self.screen,
             self.bebida,
@@ -128,6 +129,7 @@ class Game:
             y_garrafa = 30
             posicao_garrafa = (x_garrafa, y_garrafa)
 
+            # CAMADA 2: garrafa.
             self.bebida_view.draw(
                 self.screen,
                 self.item_selecionado,
@@ -137,6 +139,8 @@ class Game:
             )
 
             if self.derramando:
+                # CAMADA 3: fluxo. Fica na frente da máscara do líquido,
+                # mas ainda atrás do sprite/visualização do copo.
                 self.bebida_view.draw_fluxo(
                     self.screen,
                     self.item_selecionado,
@@ -145,7 +149,10 @@ class Game:
                     self.tempo_inicio,
                 )
 
+        # CAMADA 4: copo por último, cobrindo o fluxo onde o sprite do copo
+        # precisar ficar na frente.
         self.copo_view.draw(self.screen, GLASS_POSITION)
+
         self.barra_ml.draw(
             self.screen,
             self.bebida.ml_atual,
