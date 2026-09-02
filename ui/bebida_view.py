@@ -13,43 +13,37 @@ class BebidaView:
         if not bebida.ingredientes or bebida.copo is None:
             return
 
-        mask = assets.image(bebida.copo.mascara, bebida.copo.tamanho)
-        largura, altura = mask.get_size()
+        largura, altura = bebida.copo.tamanho
         capacidade = bebida.copo.capacidade_ml
         ml_total = min(bebida.ml_atual, capacidade)
 
         if capacidade <= 0 or ml_total <= 0:
             return
 
-        # A máscara define a área interna do copo. As camadas são desenhadas
-        # de baixo para cima respeitando a quantidade de cada ingrediente.
-        altura_liquido = int(altura * (ml_total / capacidade))
-        topo_liquido = altura - altura_liquido
-
+        mask = assets.transparency_mask(bebida.copo.mascara, bebida.copo.tamanho)
         acumulado = 0
+
         for item in bebida.ingredientes:
-            camada_altura = int(altura * (item.quantidade_ml / capacidade))
-            if camada_altura <= 0:
+            inicio = altura - int(
+                altura * (acumulado + item.quantidade_ml) / capacidade
+            )
+            fim = altura - int(altura * acumulado / capacidade)
+            inicio = max(0, inicio)
+            fim = min(altura, fim)
+
+            if fim <= inicio:
+                acumulado += item.quantidade_ml
                 continue
 
             camada = pygame.Surface((largura, altura), pygame.SRCALPHA)
             camada.fill((*item.ingrediente.cor, 255))
 
-            # Mantém somente a faixa correspondente à camada atual.
-            inicio = altura - int(altura * (acumulado + item.quantidade_ml) / capacidade)
-            fim = altura - int(altura * acumulado / capacidade)
-            inicio = max(topo_liquido, inicio)
-            fim = max(inicio, fim)
+            # Aplica a máscara transparente do interior do copo.
+            camada.blit(mask, (0, 0), special_flags=pygame.BLEND_RGBA_MULT)
 
-            alpha = pygame.Surface((largura, altura), pygame.SRCALPHA)
-            alpha.fill((0, 0, 0, 0))
-            alpha.blit(mask, (0, 0), special_flags=pygame.BLEND_RGBA_MIN)
-            camada.blit(alpha, (0, 0), special_flags=pygame.BLEND_RGBA_MULT)
+            # Mantém somente a faixa correspondente à quantidade deste ingrediente.
+            camada.fill((0, 0, 0, 0), (0, 0, largura, inicio))
+            camada.fill((0, 0, 0, 0), (0, fim, largura, altura - fim))
 
-            faixa = pygame.Surface((largura, altura), pygame.SRCALPHA)
-            faixa.blit(camada, (0, 0))
-            faixa.fill((0, 0, 0, 0), (0, 0, largura, inicio))
-            faixa.fill((0, 0, 0, 0), (0, fim, largura, altura - fim))
-            screen.blit(faixa, position)
-
+            screen.blit(camada, position)
             acumulado += item.quantidade_ml
